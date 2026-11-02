@@ -3,7 +3,7 @@
  * Carte Lovelace livrée avec l'intégration simplepool.
  * Aucune dépendance (ni button-card, ni mushroom, ni card-mod).
  */
-const CARD_VERSION = "1.0.0";
+const CARD_VERSION = "0.1.1";
 
 const DEFAULT_ENTITIES = {
   prog: "switch.piscine_programmation",
@@ -59,12 +59,14 @@ class SimplePoolCard extends HTMLElement {
   setConfig(config) {
     this._config = config || {};
     this._e = { ...DEFAULT_ENTITIES, ...(this._config.entities || {}) };
+    this._resolved = false;
     this._last = null;
     this._maybeRender();
   }
 
   set hass(hass) {
     this._hass = hass;
+    if (!this._resolved) this._resolve();
     this._maybeRender();
   }
 
@@ -75,6 +77,30 @@ class SimplePoolCard extends HTMLElement {
 
   disconnectedCallback() {
     clearInterval(this._timer);
+  }
+
+  /* Retrouve les entités de l'intégration quel que soit leur identifiant :
+     Home Assistant peut y insérer le nom de l'appareil (ex. piscine_nonopool_volume)
+     ou ajouter un suffixe (_2) si d'anciennes entités du même nom existent. */
+  _resolve() {
+    const states = this._hass?.states;
+    if (!states) return;
+    const custom = this._config.entities || {};
+    const reg = this._hass.entities || {};
+    const ids = Object.keys(states);
+    let all = true;
+    for (const [key, def] of Object.entries(DEFAULT_ENTITIES)) {
+      if (custom[key]) continue;
+      const [domain, objectId] = def.split(".");
+      const suffix = objectId.replace(/^piscine_/, "");
+      const re = new RegExp(`^${domain}\\.(?:.+_)?${suffix}(?:_\\d+)?$`);
+      const ours = ids
+        .filter((id) => re.test(id) && reg[id]?.platform === "simplepool")
+        .sort((a, b) => a.length - b.length);
+      const found = ours[0] || (states[def] ? def : undefined);
+      if (found) this._e[key] = found; else all = false;
+    }
+    this._resolved = all;
   }
 
   /* ------------------------------------------------------------- helpers */
@@ -243,8 +269,10 @@ class SimplePoolCard extends HTMLElement {
     this._bind();
     const e = this._e;
     if (!this._st(e.plan)) {
-      this.shadowRoot.innerHTML = `<ha-card><div style="padding:16px">Intégration <b>SimplePool</b> introuvable.
-        Ajoutez-la dans Paramètres → Appareils et services.</div></ha-card>`;
+      this._resolve();
+      this.shadowRoot.innerHTML = `<ha-card><div style="padding:16px;line-height:1.5">Intégration <b>SimplePool</b> introuvable :
+        l'entité <code>${esc(e.plan)}</code> n'existe pas.<br>Vérifiez que l'intégration est chargée
+        (Paramètres → Appareils et services) et que ses entités ne sont pas désactivées.</div></ha-card>`;
       return;
     }
     const x = this._ext();
