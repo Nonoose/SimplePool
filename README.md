@@ -1,7 +1,6 @@
 # SimplePool
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
-[![Validate](https://github.com/Nonoose/SimplePool/actions/workflows/validate.yml/badge.svg)]
 Intégration Home Assistant pour piloter la pompe de filtration d'une piscine, livrée avec sa propre carte Lovelace en forme de **programmateur mécanique 24 h**.
 Intégration créée avec l'aide de Claude
 
