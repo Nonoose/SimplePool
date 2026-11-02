@@ -3,7 +3,7 @@
  * Carte Lovelace livrée avec l'intégration simplepool.
  * Aucune dépendance (ni button-card, ni mushroom, ni card-mod).
  */
-const CARD_VERSION = "0.1.1";
+const CARD_VERSION = "0.1.2";
 
 const DEFAULT_ENTITIES = {
   prog: "switch.piscine_programmation",
