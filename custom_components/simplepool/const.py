@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Final
 
 DOMAIN: Final = "simplepool"
-VERSION: Final = "1.0.0"  # garder synchronisé avec manifest.json
+VERSION: Final = "0.1.1"  # garder synchronisé avec manifest.json
 
 CONF_PUMP: Final = "pump_entity"
 CONF_WATER: Final = "water_temp_entity"
