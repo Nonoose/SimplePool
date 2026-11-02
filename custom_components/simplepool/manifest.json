@@ -1,0 +1,19 @@
+{
+  "domain": "simplepool",
+  "name": "SimplePool",
+  "codeowners": [
+    "@Nonoose"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
+  "documentation": "https://github.com/Nonoose/SimplePool",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/Nonoose/SimplePool/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}

@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SimplePool",
+        "description": "Choisissez l'entité qui commande la pompe et, si vous en avez, les sondes de température.",
+        "data": {
+          "pump_entity": "Pompe",
+          "water_temp_entity": "Température de l'eau",
+          "air_temp_entity": "Température extérieure (hors gel)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Déjà configurée."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Entités utilisées",
+        "data": {
+          "pump_entity": "Pompe",
+          "water_temp_entity": "Température de l'eau",
+          "air_temp_entity": "Température extérieure (hors gel)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SimplePool",
+        "description": "Select the entity that controls the pump and, if available, the temperature sensors.",
+        "data": {
+          "pump_entity": "Pump",
+          "water_temp_entity": "Water temperature",
+          "air_temp_entity": "Outdoor temperature (frost protection)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Entities",
+        "data": {
+          "pump_entity": "Pump",
+          "water_temp_entity": "Water temperature",
+          "air_temp_entity": "Outdoor temperature (frost protection)"
+        }
+      }
+    }
+  }
+}
