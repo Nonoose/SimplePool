@@ -50,6 +50,7 @@ Options :
 
 ```yaml
 type: custom:simplepool-card
+HACS ajoute automatiquement la ressource Lovelace.
 title: Ma piscine          # titre affiché
 entities:                  # seulement si vous avez renommé des entités
   vol: number.mon_volume
