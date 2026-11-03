@@ -26,26 +26,42 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 type PiscineConfigEntry = ConfigEntry[PoolController]
 
-async def _ensure_lovelace_resource(hass):
-    resources = hass.data["lovelace"]["resources"]
-    url = f"{CARD_URL}?v={VERSION}"
-    existing = await resources.async_items()
-    if not any(r["url"] == url for r in existing):
-        await resources.async_create_item(
-            {
-                "res_type": "module",
-                "url": url,
-            }
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
+
+async def _ensure_lovelace_resource(hass: HomeAssistant) -> None:
+    lovelace = hass.data.get("lovelace")
+    resources = getattr(lovelace, "resources", None)
+    if not isinstance(resources, ResourceStorageCollection):
+        _LOGGER.warning(
+            "Lovelace en mode YAML ou indisponible : ajoute manuellement la ressource %s (module)",
+            CARD_URL,
         )
+        return
+
+    if not resources.loaded:
+        await resources.async_load()
+        resources.loaded = True
+
+    url = f"{CARD_URL}?v={VERSION}"
+    for item in resources.async_items():
+        if item["url"].split("?")[0] == CARD_URL:
+            if item["url"] != url:
+                await resources.async_update_item(
+                    item["id"], {"res_type": "module", "url": url}
+                )
+            return
+
+    await resources.async_create_item({"res_type": "module", "url": url})
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Sert la carte Lovelace et la charge automatiquement dans l'interface."""
     path = Path(__file__).parent / "www" / CARD_FILENAME
-    await _ensure_lovelace_resource(hass)
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL, str(path), True)]
     )
-    
+    await _ensure_lovelace_resource(hass)
     return True
 
 
