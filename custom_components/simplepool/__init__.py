@@ -9,6 +9,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.components.frontend import add_extra_js_url
 
 from .const import CARD_FILENAME, CARD_URL, DOMAIN, VERSION
 from .controller import PoolController
@@ -32,6 +33,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL, str(path), True)]
     )
+    add_extra_js_url(hass, f"{CARD_URL}?v={VERSION}")
     return True
 
 
