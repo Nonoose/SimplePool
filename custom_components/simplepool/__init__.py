@@ -9,7 +9,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
-from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 
 from .const import CARD_FILENAME, CARD_URL, DOMAIN, VERSION
 from .controller import PoolController
@@ -26,14 +26,26 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 type PiscineConfigEntry = ConfigEntry[PoolController]
 
+async def _ensure_lovelace_resource(hass):
+    resources = hass.data["lovelace"]["resources"]
+    url = f"{CARD_URL}?v={VERSION}"
+    existing = await resources.async_items()
+    if not any(r["url"] == url for r in existing):
+        await resources.async_create_item(
+            {
+                "res_type": "module",
+                "url": url,
+            }
+        )
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Sert la carte Lovelace et la charge automatiquement dans l'interface."""
     path = Path(__file__).parent / "www" / CARD_FILENAME
+    await _ensure_lovelace_resource(hass)
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL, str(path), True)]
     )
-    add_extra_js_url(hass, f"{CARD_URL}?v={VERSION}")
+    
     return True
 
 
